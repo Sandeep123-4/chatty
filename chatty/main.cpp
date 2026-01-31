@@ -21,7 +21,9 @@ string getParam(string req, string key) {
 }
 
 string httpResponse(string body) {
-    return "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nAccess-Control-Allow-Origin: *\r\n\r\n" + body;
+    return "HTTP/1.1 200 OK\r\n"
+           "Content-Type: text/plain\r\n"
+           "Access-Control-Allow-Origin: *\r\n\r\n" + body;
 }
 
 int main() {
@@ -32,7 +34,8 @@ int main() {
     sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = INADDR_ANY;
-    int port = atoi(getenv("PORT"));
+
+    int port = atoi(getenv("PORT"));   // IMPORTANT for Render
     addr.sin_port = htons(port);
 
     bind(server_fd, (sockaddr*)&addr, sizeof(addr));
@@ -54,7 +57,6 @@ int main() {
             inbox[name];
             response = httpResponse("Joined: " + name);
         }
-
         else if (req.find("/send") != string::npos) {
             string name = getParam(req, "name");
             string msg = getParam(req, "msg");
@@ -64,7 +66,6 @@ int main() {
             }
             response = httpResponse("Message sent");
         }
-
         else if (req.find("/poll") != string::npos) {
             string name = getParam(req, "name");
             string out;
@@ -72,13 +73,11 @@ int main() {
             inbox[name].clear();
             response = httpResponse(out.empty() ? "No new messages" : out);
         }
-
         else if (req.find("/users") != string::npos) {
             string out;
             for (string u : users) out += u + "\n";
             response = httpResponse(out);
         }
-
         else {
             response = httpResponse("Chat server online");
         }
@@ -87,3 +86,4 @@ int main() {
         close(client);
     }
 }
+
